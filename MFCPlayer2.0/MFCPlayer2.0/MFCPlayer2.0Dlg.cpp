@@ -52,17 +52,21 @@ END_MESSAGE_MAP()
 
 CMFCPlayer20Dlg::CMFCPlayer20Dlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCPLAYER20_DIALOG, pParent)
-	, edit_Playroom(_T(""))
+	
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	numberOfFiles = 0;
+	orderNumber = 0;
+	isFirstAddFile = 1;
 }
 
 void CMFCPlayer20Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_ListOfName, edit_Playroom);
-	DDX_Control(pDX, IDC_ListOfName, m_ListOfName);
+	//	DDX_Text(pDX, IDC_ListOfName, edit_Playroom);
+//	DDX_Control(pDX, IDC_ListOfName, m_ListOfName);
+//	DDX_Control(pDX, IDC_LISTCTRL, m_ListCtrlPlayList);
+	DDX_Control(pDX, IDC_LIST1, m_ListOfName);
 }
 
 BEGIN_MESSAGE_MAP(CMFCPlayer20Dlg, CDialogEx)
@@ -71,6 +75,7 @@ BEGIN_MESSAGE_MAP(CMFCPlayer20Dlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_AddMusic, &CMFCPlayer20Dlg::OnBnClickedAddmusic)
 	ON_BN_CLICKED(IDC_PLAY, &CMFCPlayer20Dlg::OnBnClickedPlay)
+	ON_BN_CLICKED(IDC_DELETE, &CMFCPlayer20Dlg::OnBnClickedDelete)
 END_MESSAGE_MAP()
 
 
@@ -226,22 +231,27 @@ void CMFCPlayer20Dlg::OnBnClickedAddmusic()
 		ZeroMemory(szFileName, sizeof(szFileName));
 
 //		HWND hwndList = GetDlgItem(IDC_ListOfName);
-		
+		int numberOfString = 0;		//记录切割路径字符串数字
 		while (*p)
 		{
 			lstrcat(szFileName, szPath);/*给文件名加上路径*/
 
 			lstrcat(szFileName, p);/*加上文件名*/
 			lstrcat(szFileName, "!");
-			AfxExtractSubString(m_PathOfMusicDoc[numberOfFiles], szFileName, numberOfFiles,'!');
-
+			if(isFirstAddFile==1)AfxExtractSubString(m_PathOfMusicDoc[numberOfFiles], szFileName, numberOfFiles,'!');
+			else
+			{
+				AfxExtractSubString(m_PathOfMusicDoc[numberOfFiles], szFileName, numberOfString++, '!');
+			}
 //			ListBox_InsertString(hwndList, -1, p);
 			m_ListOfName.AddString(p);
+//			m_ListCtrlPlayList.InsertItem(numberOfFiles,p);
 //			lstrcat(szFileName, TEXT("\n"));/*换行
 
 			numberOfFiles++;
 			p += lstrlen(p) + 1;/*移到下一个文件*/
 		}
+		isFirstAddFile = 0;
 //		m_PathOfMusicDoc = new CString[numberOfFiles];
 	
 		
@@ -305,7 +315,8 @@ void CMFCPlayer20Dlg::Load(HWND hWnd, CString strFilepath)
 
 void CMFCPlayer20Dlg::play()
 {
-//	Load(m_hWnd, m_PathOfMusicDoc[1]);
+	orderNumber =m_ListOfName.GetCurSel();
+	Load(m_hWnd, m_PathOfMusicDoc[orderNumber]);
 	MCI_PLAY_PARMS mciplayparms;
 	mciplayparms.dwCallback = (DWORD)m_hWnd;
 	mciplayparms.dwFrom = 0; //每次播放都是从0开始播放
@@ -318,4 +329,12 @@ void CMFCPlayer20Dlg::OnBnClickedPlay()
 	// TODO: 在此添加控件通知处理程序代码
 	play();
 	SetDlgItemText(IDC_STOP, "暂停");
+}
+
+
+void CMFCPlayer20Dlg::OnBnClickedDelete()
+{
+	// TODO: 在此添加控件通知处理程序代码
+//	m_ListOfName.DeleteString(m_ListOfName.GetCurSel());
+//	m_ListOfName.DeleteString(m_ListOfName.GetCurSel());
 }

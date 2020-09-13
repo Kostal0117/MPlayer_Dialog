@@ -56,9 +56,9 @@ private:
 	CString m_PathOfMusicDoc[MAX_PATH * 80];		//添加歌曲文件时的路径
 	CString m_NameOfMusicDoc;		//歌曲文件名
 	int numberOfFiles;				//文件的数量
-	
-	CString edit_Playroom;
-	CListBox m_ListOfName;
+	int orderNumber;				//所选歌曲的序号
+//	CString edit_Playroom;
+//	CListBox m_ListOfName;			//列表框的变量
 
 	OPENFILENAME ofn;//打开文件对话框的文件结构
 
@@ -69,10 +69,15 @@ private:
 	char szPath[80 * MAX_PATH];//储存路径
 
 	char OpenMusicFile[MAX_PATH];//保存路径(用于操作音乐)
-
-	HWND m_hWnd;
-	DWORD DeviceId;
+	/*播放变量的定义*/
+	HWND m_hWnd;				
+	DWORD DeviceId;				
 	MCI_OPEN_PARMS mciopenparms;
 public:
 	afx_msg void OnBnClickedPlay();
+	afx_msg void OnBnClickedDelete();
+private:
+	CListCtrl m_ListCtrlPlayList;
+	CListBox m_ListOfName;			//列表框变量名
+	bool isFirstAddFile;				//记录是否第一次添加文件
 };
